@@ -9,8 +9,6 @@ MotionIQ is an AI-powered Business Analyst and delivery-orchestration platform. 
 5. Generates a requirement document, an epic, and user stories, with full version history.
 6. Produces a Jira-ready execution package and, on approval, submits it directly to Jira.
 
-For the full architecture and business case — including the multi-agent design, retrieval pipeline, governance model, and production roadmap.
-
 ## Architecture at a Glance
 
 - **Backend**: FastAPI (`src/api`), orchestrating a 9-node deterministic graph (`src/graph/orchestration_graph.py`) that routes each request through intent classification, retrieval/grounding, metadata checks, and the BA (requirement) workflow.
