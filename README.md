@@ -31,4 +31,4 @@ All configuration is environment-driven via `.env` (see `.env.example` for the f
 
 ## Project Status
 
-MotionIQ is a proof-of-concept. Phase 1 production-readiness work (containerization, health monitoring, CI build validation, non-root execution) is complete.
+Phase 1 & 2 production-readiness work (containerization, health monitoring, CI build validation, non-root execution) is complete.
