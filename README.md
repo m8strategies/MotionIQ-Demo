@@ -11,46 +11,6 @@ MotionIQ is an AI-powered Business Analyst and delivery-orchestration platform. 
 
 For the full architecture and business case — including the multi-agent design, retrieval pipeline, governance model, and production roadmap.
 
-## Quick Start (Docker)
-
-```bash
-# Copy and fill in environment variables
-cp .env.example .env
-
-# Start the full stack (app, redis, db migrations)
-docker compose up -d
-
-# First run only: named volumes for index/uploads/data start empty,
-# so populate the retrieval index from the documents already under data/
-docker compose exec app python -m src.bootstrap_index
-
-# Check health
-curl http://localhost:8000/health
-```
-
-The app is served at `http://localhost:8000/app`.
-
-## Local Development (without Docker)
-
-```bash
-# Install dependencies
-pip install -r requirements.txt
-
-# Run the API server
-uvicorn src.api.main:app --reload
-
-# Run all tests
-pytest tests/
-
-# Run a single test file
-pytest tests/test_phase1.py -v
-
-# Build the document retrieval index (after uploading documents via /ingest)
-python src/build_index.py
-```
-
-The server runs at `http://127.0.0.1:8000`. The React SPA is served at `/app` directly from FastAPI — no separate frontend build step (React and Babel load via CDN in `frontend/index.html`).
-
 ## Architecture at a Glance
 
 - **Backend**: FastAPI (`src/api`), orchestrating a 9-node deterministic graph (`src/graph/orchestration_graph.py`) that routes each request through intent classification, retrieval/grounding, metadata checks, and the BA (requirement) workflow.
