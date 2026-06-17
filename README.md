@@ -27,16 +27,24 @@ MotionIQ takes a business request expressed in natural language and guides it th
 
 ## Key Capabilities
 
+<table>
+<tr>
+<td width="33%">
+
 ### Intent-Aware Processing
 
-Automatically classifies incoming requests into:
+Automatically classifies requests into:
 
 - Question
 - Concept Exploration
 - Delivery Requirement
 - Ambiguous Request
 
-Each request follows a different workflow path based on intent.
+Each request follows a specialized workflow path.
+
+</td>
+
+<td width="33%">
 
 ### AI-Guided Requirement Discovery
 
@@ -49,18 +57,15 @@ Uses a structured six-field requirement model:
 - Success Criteria
 - Frequency
 
-The platform dynamically determines whether to:
+Drives iterative clarification using confidence scoring.
 
-- Ask targeted questions
-- Confirm inferred values
-- Deepen understanding
-- Advance to review
+</td>
 
-based on confidence scoring and completeness evaluation.
+<td width="33%">
 
 ### Domain Intelligence Framework
 
-MotionIQ includes domain-specific knowledge packages that provide:
+Provides:
 
 - Business terminology
 - Inference rules
@@ -68,29 +73,43 @@ MotionIQ includes domain-specific knowledge packages that provide:
 - Confirmation logic
 - Enterprise context
 
-This enables explainable business inference beyond generic LLM reasoning.
+Enables explainable business inference beyond generic LLM reasoning.
+
+</td>
+</tr>
+
+<tr>
+<td>
 
 ### Metadata-Aware Governance
 
-MotionIQ evaluates requests against an enterprise asset catalog to identify:
+Evaluates requests against enterprise assets to identify:
 
 - Reuse
 - Extension
 - New Build
 
-opportunities before delivery artifacts are generated.
+opportunities before delivery begins.
+
+</td>
+
+<td>
 
 ### Enterprise Retrieval & Grounding
 
-Questions and concept exploration leverage a hybrid retrieval architecture:
+Hybrid retrieval architecture:
 
-- Semantic Retrieval
-- BM25 Keyword Retrieval
+- Semantic Search
+- BM25 Search
 - Re-ranking
 - Sufficiency Validation
 - Grounding Verification
 
-This improves response quality while reducing hallucination risk.
+Designed to reduce hallucination risk.
+
+</td>
+
+<td>
 
 ### Automated Delivery Artifacts
 
@@ -104,44 +123,89 @@ Generates:
 
 from a governed requirement state.
 
+</td>
+</tr>
+
+<tr>
+<td>
+
 ### Human-in-the-Loop Governance
 
-Critical lifecycle transitions require explicit user approval.
+Critical lifecycle transitions require explicit approval:
 
-Examples include:
-
-- Approval
-- Revision
-- Jira Submission
+- Approve
+- Revise
+- Submit to Jira
 
 The platform never promotes requirements autonomously.
+
+</td>
+
+<td>
+
+### Immutable Version History
+
+Captures requirement snapshots at every lifecycle transition.
+
+Supports:
+
+- Auditability
+- Traceability
+- Point-in-Time Reconstruction
+
+</td>
+
+<td>
+
+### Jira Delivery Integration
+
+Creates execution-ready Jira payloads and supports governed Jira submission workflows.
+
+</td>
+</tr>
+</table>
 
 ---
 
 ## Architecture at a Glance
 
+<table>
+<tr>
+<td width="33%">
+
 ### Frontend
 
-- React Single Page Application
+React Single Page Application
+
+Features:
+
 - Conversational Intake Interface
 - Review Workspace
 - Requirement Dashboard
-- Session Management
+- Session Navigation
+
+</td>
+
+<td width="33%">
 
 ### Backend
 
 FastAPI-based orchestration platform responsible for:
 
-- Request processing
-- Workflow orchestration
-- State management
-- Retrieval services
-- Artifact generation
-- Jira integration
+- Request Processing
+- Workflow Orchestration
+- State Management
+- Retrieval Services
+- Artifact Generation
+- Jira Integration
+
+</td>
+
+<td width="33%">
 
 ### Orchestration Engine
 
-MotionIQ executes requests through a deterministic 9-node orchestration graph responsible for:
+Deterministic 9-node orchestration graph responsible for:
 
 1. Intent Classification
 2. Ambiguity Resolution
@@ -153,48 +217,42 @@ MotionIQ executes requests through a deterministic 9-node orchestration graph re
 8. Artifact Generation
 9. Lifecycle Management
 
+</td>
+</tr>
+
+<tr>
+<td>
+
 ### Multi-Agent Design
 
-MotionIQ uses specialized bounded agents:
+Specialized bounded agents:
 
-| Agent | Responsibility |
-|---------|---------|
-| LeaderAgent | Workflow orchestration and coordination |
-| MeaningAgent | Requirement shape identification |
-| MetadataAgent | Asset catalog analysis and reuse recommendations |
-| ContextAgent | Retrieval, grounding, and contextual enrichment |
+- LeaderAgent
+- MeaningAgent
+- MetadataAgent
+- ContextAgent
 
-Each agent operates within deterministic workflow boundaries.
+Each operates within deterministic workflow boundaries.
+
+</td>
+
+<td>
 
 ### Domain Intelligence Layer
 
-The domain intelligence framework acts as a business context engine that enhances requirement discovery and inference.
+Business context engine providing:
 
-Domain packages contain:
+- Domain Knowledge
+- Inference Rules
+- Clarification Guidance
+- Confirmation Logic
+- Enterprise Terminology
 
-- Business terminology
-- Inference rules
-- Clarification guidance
-- Confirmation logic
-- Enterprise context
-- Domain-specific assumptions
+Influences requirement shaping and discovery.
 
-Examples include:
+</td>
 
-- Customer
-- Finance
-- Analytics
-- Reporting
-- Governance
-- Data Engineering
-
-The domain layer influences:
-
-- Requirement shaping
-- Slot extraction
-- Inference generation
-- Clarification prioritization
-- Decision engine recommendations
+<td>
 
 ### Retrieval Architecture
 
@@ -207,35 +265,55 @@ Hybrid retrieval pipeline:
 5. Sufficiency Gate
 6. Grounding Verification
 
-Default configuration:
+Built for enterprise knowledge retrieval.
 
-```text
-Semantic Weight: 0.60
-Keyword Weight: 0.40
+</td>
+</tr>
 
-Hybrid Weight: 0.70
-Coverage Weight: 0.30
-```
+<tr>
+<td>
 
 ### State Management
 
-MotionIQ uses a three-tier state architecture.
+Three-tier architecture:
 
-#### Per-Turn State
+- Per-Turn State
+- Session State (Redis)
+- Requirement State (PostgreSQL)
 
-Ephemeral orchestration state used during graph execution.
+Supports orchestration, continuity, and auditability.
 
-#### Session State
+</td>
 
-Redis-backed conversational continuity and workflow context.
+<td>
 
-#### Requirement State
+### Governance Framework
 
-PostgreSQL system of record containing:
+Three governance layers:
+
+- Routing Governance
+- Lifecycle Governance
+- Audit Governance
+
+Provides explainability and control.
+
+</td>
+
+<td>
+
+### Persistence Layer
+
+PostgreSQL stores:
 
 - Requirements
 - Version History
 - Jira Submission Logs
+
+Redis manages conversational continuity and workflow state.
+
+</td>
+</tr>
+</table>
 
 ---
 
@@ -263,84 +341,232 @@ Every lifecycle transition generates immutable version snapshots that provide a 
 
 MotionIQ maintains:
 
-- Requirement versions
-- Lifecycle history
-- Approval records
-- Jira submission history
+- Requirement Versions
+- Lifecycle History
+- Approval Records
+- Jira Submission History
 
 ---
 
 ## Production Readiness
 
-Completed engineering improvements include:
+<table>
+<tr>
+<td width="33%">
 
-### Platform Foundation
+### Containerization
 
-- Docker containerization
-- Non-root container execution
-- Environment-driven configuration
-- Health monitoring endpoints
-- Service dependency validation
+- Docker Deployment
+- Environment Isolation
+- Reproducible Builds
+- Portable Runtime Environment
 
-### Persistence & State
+</td>
 
-- PostgreSQL persistence layer
-- Redis-backed session management
-- Immutable requirement versioning
-- Jira submission logging
+<td width="33%">
 
-### Retrieval & Governance
+### Health Monitoring
 
-- Hybrid semantic + BM25 retrieval
-- Re-ranking pipeline
-- Sufficiency validation
-- Grounding verification
-- Metadata-driven reuse recommendations
+- Health Endpoints
+- Startup Validation
+- Dependency Checks
+- Service Availability Monitoring
 
-### Reliability Improvements
+</td>
 
-- Deterministic domain loading
-- Enhanced LLM response validation
-- Structured JSON parsing safeguards
-- Model compatibility management
-- Fail-fast Redis validation
+<td width="33%">
+
+### Security Foundation
+
+- Non-Root Container Execution
+- Environment-Based Secrets
+- Controlled Service Access
+- Session Isolation
+
+</td>
+</tr>
+
+<tr>
+<td>
+
+### Persistence & Recovery
+
+- PostgreSQL Persistence
+- Requirement Versioning
+- Jira Submission History
+- Durable State Management
+
+</td>
+
+<td>
+
+### Reliability Engineering
+
+- Redis Fail-Fast Validation
+- Deterministic Workflow Execution
+- Structured Error Handling
+- Configuration Validation
+
+</td>
+
+<td>
+
+### Retrieval Reliability
+
+- Hybrid Search Architecture
+- Grounding Validation
+- Sufficiency Controls
+- Re-ranking Pipeline
+
+</td>
+</tr>
+
+<tr>
+<td>
+
+### Governance Controls
+
+- Lifecycle Approvals
+- Audit Snapshots
+- Human-in-the-Loop Validation
+- Metadata-Based Recommendations
+
+</td>
+
+<td>
+
+### Operational Stability
+
+- Structured Logging
+- Environment Standardization
+- Service Health Validation
+- Deterministic Domain Resolution
+
+</td>
+
+<td>
+
+### Recent Enhancements
+
+- Domain Rule Evaluation Controls
+- Improved LLM Response Validation
+- JSON Parsing Hardening
+- Model Compatibility Management
+
+</td>
+</tr>
+</table>
 
 ---
 
 ## Technology Stack
+
+<table>
+<tr>
+<td width="33%">
 
 ### Frontend
 
 - React
 - JavaScript
 - HTML5
+- CSS
+
+</td>
+
+<td width="33%">
 
 ### Backend
 
-- FastAPI
 - Python
+- FastAPI
+- SQLAlchemy
+- Alembic
 
-### AI
+</td>
+
+<td width="33%">
+
+### AI & Reasoning
 
 - Anthropic Claude
-- Sentence Transformers
+- Prompt Engineering
+- Domain Inference
+- Confidence Scoring
+
+</td>
+</tr>
+
+<tr>
+<td>
 
 ### Retrieval
 
-- Hybrid Search
+- Sentence Transformers
 - BM25
-- Vector Similarity Search
+- Hybrid Search
+- Re-ranking
 
-### Data
+</td>
+
+<td>
+
+### Data & Persistence
 
 - PostgreSQL
 - Redis
+- Versioned Requirements
+- Session Management
+
+</td>
+
+<td>
 
 ### DevOps
 
 - Docker
-- SQLAlchemy
-- Alembic
+- Docker Compose
+- Environment Configuration
+- Container Health Monitoring
+
+</td>
+</tr>
+
+<tr>
+<td>
+
+### Governance
+
+- Rule Engine
+- Lifecycle Controls
+- Approval Workflows
+- Audit History
+
+</td>
+
+<td>
+
+### Integration
+
+- Jira API
+- Enterprise Metadata Catalog
+- Document Ingestion
+- Asset Reuse Evaluation
+
+</td>
+
+<td>
+
+### Architecture Patterns
+
+- Multi-Agent Architecture
+- Deterministic Orchestration
+- RAG
+- Human-in-the-Loop AI
+
+</td>
+</tr>
+</table>
 
 ---
 
@@ -364,25 +590,25 @@ All configuration is environment-driven via `.env` (see `.env.example`).
 
 ### Completed
 
-- End-to-end requirement lifecycle
-- Deterministic orchestration engine
-- Multi-agent architecture
-- Hybrid retrieval pipeline
-- Domain intelligence framework
-- Metadata-aware governance
-- Artifact generation
-- Jira integration
-- PostgreSQL persistence
-- Redis session management
-- Containerized deployment
+- End-to-End Requirement Lifecycle
+- Deterministic Orchestration Engine
+- Multi-Agent Architecture
+- Hybrid Retrieval Pipeline
+- Domain Intelligence Framework
+- Metadata-Aware Governance
+- Artifact Generation
+- Jira Integration
+- PostgreSQL Persistence
+- Redis Session Management
+- Containerized Deployment
 
 ### In Progress
 
-- Production hardening
-- Observability and telemetry
-- Multi-model orchestration
-- Configuration-driven workflow extensibility
-- Enterprise deployment readiness
+- Production Hardening
+- Observability & Telemetry
+- Multi-Model Orchestration
+- Configuration-Driven Workflow Extensibility
+- Enterprise Deployment Readiness
 
 ---
 
