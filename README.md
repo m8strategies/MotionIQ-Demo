@@ -1,421 +1,100 @@
 # MotionIQ
 
-MotionIQ is an AI-powered Business Analyst and delivery orchestration platform that transforms natural-language business requests into governed, execution-ready delivery artifacts.
+MotionIQ is an AI-powered Business Analyst and delivery-orchestration platform. It takes a business request expressed in natural language — a question, a vague idea, or a formal requirement — and walks it through a deterministic, governed pipeline:
 
-The platform combines deterministic workflow orchestration, enterprise retrieval, domain intelligence, metadata-driven governance, human-in-the-loop controls, and automated artifact generation to accelerate the path from business idea to implementation.
+1. Classifies the intent of the request (question, concept exploration, or delivery requirement).
+2. Grounds questions and concept exploration in enterprise documents using hybrid retrieval (semantic + keyword search) with hallucination controls.
+3. For delivery requirements, runs an iterative clarification dialogue until a requirement is "delivery ready," using a structured six-field requirement model.
+4. Checks the requirement against an enterprise metadata/asset catalog to recommend **reuse**, **extension**, or **new build**.
+5. Generates a requirement document, an epic, and user stories, with full version history.
+6. Produces a Jira-ready execution package and, on approval, submits it directly to Jira.
 
-**Core Principle**
+## How It Works
 
-> AI provides recommendations. The system governs decisions.
+**Example:** A product manager types: *"Finance needs a dashboard for regional profitability."*
 
----
+1. **Classification** — Leader agent classifies the input as a delivery requirement with subtype `interactive_dashboard`.
+2. **Asset catalog check** — Metadata agent searches the enterprise catalog and flags two existing regional KPI datasets as reuse candidates, recommending extension over new build.
+3. **Clarification dialogue** — The system asks targeted questions to fill the six-field requirement model (Business Objective, Scope, Stakeholders, Data Sources, Frequency, Success Criteria). The PM answers over 2–3 turns until the confidence gate passes.
+4. **Artifact generation** — BA agent generates a structured requirement document, an epic ("Regional Profitability Intelligence"), and user stories with acceptance criteria. A version snapshot is written to the database.
+5. **Human approval** — The review tab presents the full package. The PM clicks **Submit to Jira**.
+6. **Jira submission** — The system builds the Jira payload and posts it. A submission log entry is written with the response, timestamp, and requirement version.
 
-## What MotionIQ Does
+Total time from first message to Jira ticket: typically under 10 minutes.
 
-MotionIQ takes a business request expressed in natural language and guides it through a structured requirement lifecycle.
+## Quick Start (Docker)
 
-1. Classifies the request as a question, concept exploration, delivery requirement, or ambiguous request.
-2. Grounds questions and concept exploration in enterprise knowledge using hybrid retrieval and hallucination controls.
-3. Uses domain-aware inference and a structured six-field requirement model to drive iterative requirement discovery.
-4. Evaluates requests against an enterprise asset catalog to identify reuse, extension, or new-build opportunities.
-5. Applies confidence scoring and deterministic decision logic to determine the next best action.
-6. Generates review-ready delivery artifacts including requirement documents, epics, user stories, and acceptance criteria.
-7. Maintains immutable version history throughout the lifecycle.
-8. Produces Jira-ready execution packages and supports governed Jira submission.
+```bash
+# Copy and fill in environment variables
+cp .env.example .env
 
----
+# Start the full stack (app, redis, db migrations)
+docker compose up -d
 
-## Key Capabilities
+# First run only: named volumes for index/uploads/data start empty,
+# so populate the retrieval index from the documents already under data/
+docker compose exec app python -m src.bootstrap_index
 
-<table width="100%">
-<tr>
-<td width="33%" valign="top" align="left">
+# Check health
+curl http://localhost:8000/health
+```
 
-<strong>Intent-Aware Processing</strong><br><br>
+The app is served at `http://localhost:8000/app`.
 
-Automatically classifies incoming requests into:
+## Local Development (without Docker)
 
-- Question
-- Concept Exploration
-- Delivery Requirement
-- Ambiguous Request
+```bash
+# Install dependencies
+pip install -r requirements.txt
 
-Each request follows a different workflow path based on intent.
+# Run the API server
+uvicorn src.api.main:app --reload
 
-</td>
-<td width="33%" valign="top" align="left">
+# Run all tests
+pytest tests/
 
-<strong>AI-Guided Requirement Discovery</strong><br><br>
+# Run a single test file
+pytest tests/test_phase1.py -v
 
-Uses a structured six-field requirement model:
+# Build the document retrieval index (after uploading documents via /ingest)
+python src/build_index.py
+```
 
-- Business Objective
-- Scope
-- Data Sources
-- Stakeholders
-- Success Criteria
-- Frequency
+The server runs at `http://127.0.0.1:8000`. The React SPA is served at `/app` directly from FastAPI — no separate frontend build step (React and Babel load via CDN in `frontend/index.html`).
 
-The platform dynamically determines whether to ask targeted questions, confirm inferred values, deepen understanding, or advance to review based on confidence scoring and completeness evaluation.
+## Architecture at a Glance
 
-</td>
-<td width="33%" valign="top" align="left">
-
-<strong>Domain Intelligence Framework</strong><br><br>
-
-MotionIQ includes domain-specific knowledge packages that provide:
-
-- Business terminology
-- Inference rules
-- Clarification guidance
-- Confirmation logic
-- Enterprise context
-
-This enables explainable business inference beyond generic LLM reasoning.
-
-</td>
-</tr>
-<tr>
-<td width="33%" valign="top" align="left">
-
-<strong>Metadata-Aware Governance</strong><br><br>
-
-MotionIQ evaluates requests against an enterprise asset catalog to identify:
-
-- Reuse
-- Extension
-- New Build
-
-opportunities before delivery artifacts are generated.
-
-</td>
-<td width="33%" valign="top" align="left">
-
-<strong>Enterprise Retrieval and Grounding</strong><br><br>
-
-Questions and concept exploration leverage a hybrid retrieval architecture:
-
-- Semantic Retrieval
-- BM25 Keyword Retrieval
-- Re-ranking
-- Sufficiency Validation
-- Grounding Verification
-
-This improves response quality while reducing hallucination risk.
-
-</td>
-<td width="33%" valign="top" align="left">
-
-<strong>Automated Delivery Artifacts</strong><br><br>
-
-Generates:
-
-- Requirement Documents
-- Epics
-- User Stories
-- Acceptance Criteria
-- Jira Execution Packages
-
-from a governed requirement state.
-
-</td>
-</tr>
-<tr>
-<td width="33%" valign="top" align="left">
-
-<strong>Human-in-the-Loop Governance</strong><br><br>
-
-Critical lifecycle transitions require explicit user approval.
-
-Examples include:
-
-- Approval
-- Revision
-- Jira Submission
-
-The platform never promotes requirements autonomously.
-
-</td>
-<td width="33%" valign="top" align="left">
-
-<strong>Versioned Requirement Lifecycle</strong><br><br>
-
-Maintains immutable requirement snapshots across lifecycle transitions.
-
-Supports:
-
-- Requirement history
-- Audit traceability
-- Approval lineage
-- Jira submission tracking
-
-</td>
-<td width="33%" valign="top" align="left">
-
-<strong>Execution Package Generation</strong><br><br>
-
-Creates Jira-ready execution outputs from approved requirement state, including epics, user stories, acceptance criteria, and delivery package structure.
-
-</td>
-</tr>
-</table>
-
----
-
-
-
----
-
-## Governance Framework
-
-MotionIQ implements three independent governance layers.
-
-### Routing Governance
-
-AI components operate within explicitly bounded responsibilities. Workflow routing is controlled by deterministic orchestration logic.
-
-### Lifecycle Governance
-
-Critical lifecycle transitions require explicit user actions and approval.
-
-Examples include:
-
-- APPROVE
-- REVISE
-- SEND_TO_JIRA
-
-### Audit Governance
-
-Every lifecycle transition generates immutable version snapshots that provide a complete, reconstructable audit trail.
-
-MotionIQ maintains:
-
-- Requirement versions
-- Lifecycle history
-- Approval records
-- Jira submission history
-
----
-
-## Production Readiness
-
-Completed engineering improvements include:
-
-<table width="100%">
-<tr>
-<td width="33%" valign="top" align="left">
-
-<strong>Platform Foundation</strong><br><br>
-
-- Docker containerization
-- Non-root container execution
-- Environment-driven configuration
-- Health monitoring endpoints
-- Service dependency validation
-
-</td>
-<td width="33%" valign="top" align="left">
-
-<strong>Persistence and State</strong><br><br>
-
-- PostgreSQL persistence layer
-- Redis-backed session management
-- Immutable requirement versioning
-- Jira submission logging
-
-</td>
-<td width="33%" valign="top" align="left">
-
-<strong>Retrieval and Governance</strong><br><br>
-
-- Hybrid semantic + BM25 retrieval
-- Re-ranking pipeline
-- Sufficiency validation
-- Grounding verification
-- Metadata-driven reuse recommendations
-
-</td>
-</tr>
-<tr>
-<td width="33%" valign="top" align="left">
-
-<strong>Reliability Improvements</strong><br><br>
-
-- Deterministic domain loading
-- Enhanced LLM response validation
-- Structured JSON parsing safeguards
-- Model compatibility management
-- Fail-fast Redis validation
-
-</td>
-<td width="33%" valign="top" align="left">
-
-<strong>Runtime Health</strong><br><br>
-
-- Application health endpoint
-- Database status validation
-- Redis status validation
-- Index status validation
-- Environment startup checks
-
-</td>
-<td width="33%" valign="top" align="left">
-
-<strong>Container Readiness</strong><br><br>
-
-- Docker Compose support
-- Reproducible runtime setup
-- Portable service configuration
-- App, database, and Redis service separation
-- Build validation support
-
-</td>
-</tr>
-</table>
-
----
-
-## Technology Stack
-
-<table width="100%">
-<tr>
-<td width="33%" valign="top" align="left">
-
-<strong>Frontend</strong><br><br>
-
-- React
-- JavaScript
-- HTML5
-
-</td>
-<td width="33%" valign="top" align="left">
-
-<strong>Backend</strong><br><br>
-
-- FastAPI
-- Python
-
-</td>
-<td width="33%" valign="top" align="left">
-
-<strong>AI</strong><br><br>
-
-- Anthropic Claude
-- Sentence Transformers
-
-</td>
-</tr>
-<tr>
-<td width="33%" valign="top" align="left">
-
-<strong>Retrieval</strong><br><br>
-
-- Hybrid Search
-- BM25
-- Vector Similarity Search
-- Semantic Search
-- Re-ranking
-
-</td>
-<td width="33%" valign="top" align="left">
-
-<strong>Data</strong><br><br>
-
-- PostgreSQL
-- Redis
-
-</td>
-<td width="33%" valign="top" align="left">
-
-<strong>DevOps</strong><br><br>
-
-- Docker
-- SQLAlchemy
-- Alembic
-
-</td>
-</tr>
-<tr>
-<td width="33%" valign="top" align="left">
-
-<strong>Governance</strong><br><br>
-
-- Deterministic routing
-- Approval workflows
-- Immutable version history
-- Metadata-driven recommendations
-
-</td>
-<td width="33%" valign="top" align="left">
-
-<strong>Integration</strong><br><br>
-
-- Jira execution packages
-- Metadata catalog checks
-- Document ingestion
-- Enterprise context enrichment
-
-</td>
-<td width="33%" valign="top" align="left">
-
-<strong>Architecture Patterns</strong><br><br>
-
-- Multi-agent architecture
-- Deterministic orchestration
-- Retrieval-Augmented Generation
-- Human-in-the-loop governance
-- State-driven lifecycle management
-
-</td>
-</tr>
-</table>
-
----
+- **Backend**: FastAPI (`src/api`), orchestrating a 9-node deterministic graph (`src/graph/orchestration_graph.py`) that routes each request through intent classification, retrieval/grounding, metadata checks, and the BA (requirement) workflow.
+- **Frontend**: Single-file React SPA (`frontend/index.html`) with component files in `frontend/components/` (`chat.jsx`, `sidebar.jsx`, `review.jsx`, `api.jsx`). No build toolchain.
+- **Retrieval**: Hybrid semantic (SentenceTransformer) + BM25 keyword search, merged and re-ranked, with grounding verification to reduce hallucination risk.
+- **Persistence**: PostgreSQL (requirements, immutable version history, Jira submission logs) via SQLAlchemy + Alembic; Redis-backed session store with in-memory fallback.
+- **Multi-agent orchestration**: Nine specialised agents (Leader, Meaning, Metadata, Context, Decision Engine, Questioning, BA, Artifact Generation, Retrieval) collaborate under a deterministic 9-node graph. AI reasoning is bounded within each agent's role; control flow between agents is explicit and inspectable via a single `route` state field — not LLM-driven.
+- **Governance**: Six-field requirement model (Business Objective, Scope, Stakeholders, Data Sources, Frequency, Success Criteria) with confidence-based readiness gates. Every requirement has an immutable version history snapshot at each lifecycle transition. No requirement reaches Jira without explicit human approval — generate-then-review-then-submit, never automatic.
+- **Model routing**: Three-tier abstraction (`src/services/llm_client.py`) — FAST, STANDARD, HEAVY — all defaulting to `claude-sonnet-4-6` unless overridden by environment variable. Reflection generation routes to FAST (`claude-haiku-4-5-20251001`); all other services use STANDARD.
 
 ## Configuration
 
-All configuration is environment-driven via `.env` (see `.env.example`).
+All configuration is environment-driven via `.env` (see `.env.example` for the full list):
 
 | Variable | Purpose |
 |---|---|
-| `ANTHROPIC_API_KEY` | Required for LLM-backed reasoning and artifact generation |
-| `DATABASE_URL` | PostgreSQL connection string |
-| `REDIS_URL` | Session persistence backend |
-| `REDIS_REQUIRED` | Enforce Redis availability |
-| `SESSION_TTL_SECONDS` | Session expiration configuration |
-| `JIRA_*` | Optional Jira integration settings |
-| `APP_USER_*` | Display identity shown in UI |
+| `ANTHROPIC_API_KEY` | Required for all LLM-backed reasoning (classification, clarification, artifact generation, summarization). |
+| `DATABASE_URL` | PostgreSQL connection string — required for the requirement lifecycle and Alembic migrations. |
+| `REDIS_URL` / `REDIS_REQUIRED` | Session store backend. Leave `REDIS_URL` empty for an in-memory fallback (local dev only). |
+| `SESSION_TTL_SECONDS` | Session expiry (default 24h). |
+| `FAST_MODEL` | Override the FAST tier model (default: `claude-sonnet-4-6`). Set to `claude-haiku-4-5-20251001` to activate cost-optimised routing for reflection generation. |
+| `STANDARD_MODEL` | Override the STANDARD tier model (default: `claude-sonnet-4-6`). |
+| `HEAVY_MODEL` | Override the HEAVY tier model (default: `claude-sonnet-4-6`). Reserved for future high-complexity routing (e.g. artifact generation). |
+| `JIRA_*` | Optional — leave blank to disable Jira submission; all other features work without it. |
+| `APP_USER_*` | Display identity shown in the UI. |
 
----
+## Project Status
 
-## Current Status
+MotionIQ is a proof-of-concept rated **Production-Adjacent** as of 2026-06-16.
 
-### Completed
+Completed work:
+- **Phase 1**: Containerization, health monitoring, CI build validation, non-root execution, Alembic migrations as a pre-start service.
+- **Stabilization**: Fixed slot extractor `when_any` evaluation, reflection JSON parsing, domain loader sort determinism, and a silent deprecated-model defect in `artifact_service` and `classification_fallback_service`.
+- **Multi-model routing**: Three-tier model abstraction live; reflection generation validated and promoted to FAST tier (~8x cost reduction); classification fallback evaluated and kept on STANDARD.
 
-- End-to-end requirement lifecycle
-- Deterministic orchestration engine
-- Multi-agent architecture
-- Hybrid retrieval pipeline
-- Domain intelligence framework
-- Metadata-aware governance
-- Artifact generation
-- Jira integration
-- PostgreSQL persistence
-- Redis session management
-- Containerized deployment
-
-### In Progress
-
-- Production hardening
-- Observability and telemetry
-- Multi-model orchestration
-- Configuration-driven workflow extensibility
-- Enterprise deployment readiness
-
----
-
-## Project Vision
-
-MotionIQ demonstrates how AI can move beyond conversational assistance into governed delivery execution.
-
-The platform combines enterprise retrieval, deterministic orchestration, domain intelligence, lifecycle governance, and human oversight to transform natural-language business requests into structured, reviewable, and execution-ready delivery artifacts.
+Known gaps — no API authentication, no LLM retry logic, silent exception swallowing in several services, 34 failing tests, mock metadata catalog, deferred context-summary reuse.
