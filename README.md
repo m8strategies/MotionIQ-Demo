@@ -164,6 +164,19 @@ Creates Jira-ready execution outputs from approved requirement state, including 
 
 ## Architecture at a Glance
 
+### Multi-Agent Design
+
+MotionIQ uses specialized bounded agents:
+
+| Agent | Responsibility |
+|---------|---------|
+| LeaderAgent | Workflow orchestration and coordination |
+| MeaningAgent | Requirement shape identification |
+| MetadataAgent | Asset catalog analysis and reuse recommendations |
+| ContextAgent | Retrieval, grounding, and contextual enrichment |
+
+Each agent operates within deterministic workflow boundaries.
+
 <table width="100%">
 <tr>
 <td width="33%" valign="top" align="left">
@@ -210,19 +223,24 @@ MotionIQ executes requests through a deterministic 9-node orchestration graph re
 </td>
 </tr>
 <tr>
-<td width="33%" valign="top" align="left">
+<<strong>State Management</strong><br><br>
 
-<strong>Multi-Agent Design</strong><br><br>
+MotionIQ uses a three-tier state architecture.
 
-MotionIQ uses specialized bounded agents:
+<strong>Per-Turn State</strong><br>
+Ephemeral orchestration state used during graph execution.
 
-<table>
-<tr>
-<th>Agent</th>
-<th>Responsibility</th>
-</tr>
-<tr>
-<td>LeaderAgent</td>
+<strong>Session State</strong><br>
+Redis-backed conversational continuity and workflow context.
+
+<strong>Requirement State</strong><br>
+PostgreSQL system of record containing:
+
+- Requirements
+- Version History
+- Jira Submission Logs
+
+</td>
 <td>Workflow orchestration and coordination</td>
 </tr>
 <tr>
