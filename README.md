@@ -274,10 +274,37 @@ Coverage Weight: 0.30
 </td>
 </tr>
 <td width="33%" valign="top" align="left">
+
 <strong></strong><br><br>
 
-</td>
+MotionIQ uses specialized bounded agents:
+
+<table>
 <tr>
+<th>Agent</th>
+<th>Responsibility</th>
+</tr>
+<tr>
+<td>LeaderAgent</td>
+<td>Workflow orchestration and coordination</td>
+</tr>
+<tr>
+<td>MeaningAgent</td>
+<td>Requirement shape identification</td>
+</tr>
+<tr>
+<td>MetadataAgent</td>
+<td>Asset catalog analysis and reuse recommendations</td>
+</tr>
+<tr>
+<td>ContextAgent</td>
+<td>Retrieval, grounding, and contextual enrichment</td>
+</tr>
+</table>
+
+Each agent operates within deterministic workflow boundaries.
+
+</td>
 <td width="33%" valign="top" align="left">
 
 <strong>State Management</strong><br><br>
